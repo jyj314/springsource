@@ -3,7 +3,19 @@ package com.study.service;
 import java.util.List;
 
 import com.study.dto.BoardDTO;
+import com.study.dto.Criteria;
 
 public interface BoardService {
-	public List<BoardDTO> getList();
+	//전체리스트
+	public List<BoardDTO> getList(Criteria cri);
+	//글쓰기
+	public boolean insert(BoardDTO insertDto);
+	//게시물 읽어오기
+	public BoardDTO getRow(int bno);
+	//게시물 수정하기
+	public boolean update(BoardDTO updateDto);
+	//게시물 삭제하기
+	public boolean delete(int bno);
+	//페이지나누기
+	public int getTotalCnt();
 }
