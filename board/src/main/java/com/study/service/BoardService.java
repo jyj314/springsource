@@ -17,5 +17,5 @@ public interface BoardService {
 	//게시물 삭제하기
 	public boolean delete(int bno);
 	//페이지나누기
-	public int getTotalCnt();
+	public int getTotalCnt(Criteria cri);
 }

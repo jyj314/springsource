@@ -2,6 +2,8 @@ package com.study.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.study.dto.BoardDTO;
 import com.study.dto.Criteria;
 
@@ -25,5 +27,8 @@ public interface BoardMapper {
 	public int delete(int bno);
 	
 	//페이지나누기
-	public int totalCnt();
+	public int totalCnt(Criteria cri);
+	
+	//댓글 cnt 수정
+	public int updateReplyCnt(@Param("bno") int bno, @Param("amount") int amount);
 }

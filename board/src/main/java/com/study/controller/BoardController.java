@@ -30,12 +30,12 @@ public class BoardController {
 	
 	@GetMapping("/list")
 	public void list(Model model,@ModelAttribute("cri") Criteria cri) {
-		log.info("전체 list목록 요청");
+		log.info("전체 list목록 요청"+cri);
 		
 		//서비스 호출
 		List<BoardDTO> list = service.getList(cri);
 		//전체 게시물 개수
-		int total = service.getTotalCnt();
+		int total = service.getTotalCnt(cri);
 		
 		//list 담기
 		model.addAttribute("pageDto", new PageDTO(cri,total));
@@ -51,12 +51,17 @@ public class BoardController {
 	
 	// post
 	@PostMapping("/register")
-	public String registerPost(BoardDTO insertDto,RedirectAttributes rttr) {
+	public String registerPost(BoardDTO insertDto,Criteria cri,RedirectAttributes rttr) {
 		log.info("글 등록 요청 "+insertDto );
 		
 		if(!service.insert(insertDto)) {
 			return "redirect:/board/register";
 		}
+		
+		rttr.addAttribute("pageNum", cri.getPageNum());
+		rttr.addAttribute("amount", cri.getAmount());
+		rttr.addAttribute("type", cri.getType());
+		rttr.addAttribute("keyword", cri.getKeyword());
 		
 		rttr.addFlashAttribute("result", insertDto.getBno());
 		return "redirect:/board/list";	
@@ -66,8 +71,9 @@ public class BoardController {
 	// bno 에 해당하는 게시물 읽어온 후 read.jsp 보여주기
 	
 	@GetMapping({"/read","/modify"})
-	public void readGet(int bno, Model model) {
+	public void readGet(int bno,@ModelAttribute("cri") Criteria cri, Model model) {
 		log.info("게시물 요청 " +bno);
+		log.info("게시물 요청 " +cri);
 		
 		BoardDTO dto = service.getRow(bno);
 		model.addAttribute("dto",dto);
@@ -77,25 +83,41 @@ public class BoardController {
 	// getMapping 작업은 위에 /read 랑 같이 처리했음으로 안해도됨
 	
 	@PostMapping("/modify")
-	public String modifyPost(BoardDTO updateDto,RedirectAttributes rttr) {
-		log.info("게시물 modify 요청");
+	public String modifyPost(BoardDTO updateDto, @ModelAttribute("cri") Criteria cri, RedirectAttributes rttr) {
+		log.info("게시물 modify 요청" +updateDto);
+		log.info("게시물 modify 요청 cri " +cri);
 		
 		//수정은 실패할일이 거의 없기때문에 if문 안걸어도됨
 		service.update(updateDto);
 		
 		//수정 성공
 		rttr.addAttribute("bno",updateDto.getBno());
+		rttr.addAttribute("pageNum", cri.getPageNum());
+		rttr.addAttribute("amount", cri.getAmount());
+		rttr.addAttribute("type", cri.getType());
+		rttr.addAttribute("keyword", cri.getKeyword());
+		
+		
 		return "redirect:/board/read";
 	}
 	
 	// /board/remove +bno
 	@GetMapping("/remove")
-	public String remove(int bno, RedirectAttributes rttr) {
+	public String remove(int bno, Criteria cri, RedirectAttributes rttr) {
 		log.info("remove 요청"+bno);
+		log.info("remove 요청-cri"+cri);
 
 		service.delete(bno);
 		
+		//주소줄에 딸려보내는 방식
+		rttr.addAttribute("pageNum", cri.getPageNum());
+		rttr.addAttribute("amount", cri.getAmount());
+		rttr.addAttribute("type", cri.getType());
+		rttr.addAttribute("keyword", cri.getKeyword());
+		
+		//세션을 이용하는 방식
 		rttr.addFlashAttribute("result", "success");
+		
 		return "redirect:/board/list";
 	}
 }

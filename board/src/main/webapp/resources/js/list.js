@@ -30,6 +30,13 @@
 	$(".paginate_button a").click(function(e){
 		e.preventDefault(); //a 속성 중지
 		
+		//bno 가 있는 경우 제거
+		actionForm.find("[name='bno']").remove();
+		
+		//action 수정
+		actionForm.attr("action","/board/list");
+		
+		
 		//사용자가 선택한 페이지 번호 가져오기
 		let pageNum = $(this).attr('href');
 		
@@ -49,9 +56,70 @@
 		actionForm.submit();
 	})
 	
+   //타이틀 클릭시
+   $(".move").click(function(e){
+      e.preventDefault(); //a 태그 기능 중지
+      
+      //a가 가지고 있는 href 가지고 오기
+      let href = $(this).attr("href");
+      
+      //actionForm 안에 bno 태그를 추가하기(값은 href가 가지고 있는 값으로)
+      //내용 보기에 들어갔을 때 사용자가 리스트 버튼이 아닌 뒤로 가기 버튼을 눌러서
+      //목록으로 돌아올 때 bno가 계속  추가되는 것 방지
+      if(actionForm.find("[name='bno']").length!=0){
+		  actionForm.find("[name='bno']").val(href);
+	  }else{
+      	actionForm.append("<input type='hidden' name='bno' value='"+ href +"'>");
+	  }
+      
+      //actionForm action 변경(/board/read)
+      actionForm.attr("action","/board/read");
+      
+      //actionForm 보내기
+      actionForm.submit();		
+	})
 	
+   //검색버튼 클릭 시
+   $(".btn-default").click(function(e){	
+	//submit 기능 중지
+	e.preventDefault();
+	
+	let searchForm = $("#searchForm");
+	
+	//type 아무것도 선택이 되지 않으면 경고 메세지 주기
+	if(searchForm.find("select[name='type']").val() == ''){
+		alert("검색기준을 선택해 주세요");
+		return false;
+	}
+	
+	//keyword 값이 없으면 경고 메세지 주기
+	if(searchForm.find("select[name='keyword']").val() == ''){
+		alert("검색어를 입력해 주세요");
+		return false;
+	}
+	
+	//검색 폼 안에 pageNum 은 1로 변경
+	searchForm.find("input[name='pageNum']").val("1");
+	
+	//검색 폼 전송
+	searchForm.submit();
+	})
 	
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
