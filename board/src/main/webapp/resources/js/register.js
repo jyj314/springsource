@@ -40,6 +40,9 @@
 				fileName:targetFile,
 				type:type
 			},
+			beforeSend:function(xhr){
+				xhr.setRequestHeader(csrfHeaderName,csrfTokenValue)
+			},
 			type:'post',
 			success:function(result){
 				console.log(result);

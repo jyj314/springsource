@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +33,7 @@ public class ReplyController {
 	// create 
 	
 	// consumes : 받아서 처리할 컨텐트 타입
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping(path="/new",consumes = "application/json", produces = MediaType.TEXT_PLAIN_VALUE )
 	public ResponseEntity<String> create(@RequestBody ReplyDTO insertDto){
 		log.info("댓글 삽입 요청"+ insertDto);
@@ -54,6 +56,7 @@ public class ReplyController {
 	
 	// @RequestMapping(path="/{rno}", method= {RequestMethod.PUT,RequestMethod.PATCH})
 	
+	@PreAuthorize("principal.username == #updateDto.replyer")
 	@PutMapping("/{rno}")
 	public ResponseEntity<String> update(@PathVariable("rno")int rno, @RequestBody ReplyDTO updateDto){
 		
@@ -68,8 +71,9 @@ public class ReplyController {
 	// 댓글삭제 : /replies/rno + Delete
 	// 성공시 success + 200, 실패시 fail + 500
 	
+	@PreAuthorize("principal.username == #dto.replyer")
 	@DeleteMapping("/{rno}")
-	public ResponseEntity<String> delete(@PathVariable("rno")int rno){
+	public ResponseEntity<String> delete(@PathVariable("rno")int rno,@RequestBody ReplyDTO dto){
 		
 		log.info("댓글 삭제 요청"+rno);
 		

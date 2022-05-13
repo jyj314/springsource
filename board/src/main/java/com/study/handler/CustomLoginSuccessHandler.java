@@ -27,6 +27,8 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 		List<String> roleNames = new ArrayList<String>();
 		authentication.getAuthorities().forEach(auth -> roleNames.add(auth.getAuthority()));
 		
+		log.info("roleNames "+roleNames);
+		
 		// 권한이 ROLE_ADMIN 인 경우 admin-page 이동
 		if(roleNames.contains("ROLE_ADMIN")) {
 			response.sendRedirect("/member/admin-page");
@@ -34,7 +36,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 		}
 		
 		// 권한이 ROLE_USER 인 경우 ROLE_MANAGER 라면 /board/list 커트롤러로 이동
-		if(roleNames.contains("ROLE_USER") || roleNames.contains("ROLE_MANAGER")) {
+		if(roleNames.contains("ROLE_MEMBER") || roleNames.contains("ROLE_MANAGER")) {
 			response.sendRedirect("/board/list");
 			return;
 		}

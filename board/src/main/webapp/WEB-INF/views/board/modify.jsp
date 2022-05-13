@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 
 <%@include file="../includes/header.jsp" %>
             <div class="row">
@@ -33,10 +34,17 @@
                 				<div class="form-group">
                 					<label>Writer</label>
                 					<input class="form-control" name="writer" readonly="readonly" value="${dto.writer}">                				
-                				</div>  
-                				<button type="submit" data-oper='modify' class="btn btn-default">Modify</button>              			
-                				<button type="submit" data-oper='remove' class="btn btn-danger">Remove</button>              			
-                				<button type="submit" data-oper='list' class="btn btn-info">List</button>              			
+                				</div> 
+                				
+                				<sec:authentication property="principal" var="info"/>
+                				<sec:authorize access="isAuthenticated()">
+	                				<c:if test="${info.username==dto.writer}">
+		                				<button type="submit" data-oper='modify' class="btn btn-default">Modify</button>              			
+		                				<button type="submit" data-oper='remove' class="btn btn-danger">Remove</button>              			
+		                			</c:if>
+                				</sec:authorize> 
+                				<button type="submit" data-oper='list' class="btn btn-info">List</button> 
+                				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>             			
                 			</form>
                 		</div>
                 	</div>
@@ -64,6 +72,7 @@
 <%-- remove와 list를 위한 폼--%>
 <form action="" id="operForm">
 	<input type="hidden" value="${dto.bno}" name="bno" />
+	<input type="hidden" value="${dto.writer}" name="writer" />
 	<input type="hidden" value="${cri.pageNum}" name="pageNum" />
 	<input type="hidden" value="${cri.amount}" name="amount" />
 	<input type="hidden" value="${cri.type}" name="type" />
@@ -73,7 +82,12 @@
 <script>
 	//현재 글 번호
 	let bno=${dto.bno};
+	
+	//csrf 토큰 값
+	let csrfHeaderName = "${_csrf.headerName}";
+	let csrfTokenValue = "${_csrf.token}";
 </script>
+
 <script src="/resources/js/modify.js"></script> 
 <script src="/resources/js/upload.js"></script> 
 <%@include file="../includes/footer.jsp" %>      
